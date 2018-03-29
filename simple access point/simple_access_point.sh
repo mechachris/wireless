@@ -3,8 +3,8 @@
 # Wireless card for AP 
 WIRELESS_INTERFACE=wlan0
 
-# Interace to route traffic out
-# For repponder set VM NIC to "Host-Only"
+# Interface to route traffic out
+# For responder set VM NIC to "Host-Only"
 # For DNS overrides set VM NIC to bridge through to internet
 OUT_INTERFACE=eth0
 
