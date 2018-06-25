@@ -4,12 +4,6 @@ import subprocess
 import signal
 import os
 import threading
-
-clients = []
-macs = []
-
-
-
 import BaseHTTPServer
 import datetime
 from SimpleHTTPServer import SimpleHTTPRequestHandler
@@ -18,6 +12,8 @@ import base64
 import ssl
 import SocketServer
 
+clients = []
+macs = []
 CERTFILE_PATH = "./cert.pem"
 
 class AuthHandler(SimpleHTTPRequestHandler):
