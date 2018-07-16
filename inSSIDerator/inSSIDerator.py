@@ -273,7 +273,7 @@ def main():
     parser.add_argument("-d", "--domain", dest="domain", required=True,
                         help="Domain name to target (specify a comma separated list for mulitple names e.g 'outlook.office365.com,mail.company.com')")
 
-    parse.add_argument("-m", "--max", dest="max_clients",
+    parse.add_argument("--max-clients", dest="max_clients",
                         help="Max number of clients that can connect. Default is unlimited but this may have adverse effects on performance")
     
     args = parser.parse_args()
