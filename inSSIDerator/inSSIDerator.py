@@ -119,6 +119,9 @@ def generate_hostapd_conf(args):
         file.write("auth_algs=1\n")
         file.write("macaddr_acl=1\n")
         file.write("accept_mac_file=" + str(os.getcwd()) + "/" + str(args.maclist) + "\n")
+        
+        if args.max_clients:
+            file.write("max_num_sta=" + str(args.max_clients) + "\n")
 
 def generate_dnsmasq_hosts(args):
     with open("dnsmasq.hosts", "w") as file:
@@ -270,6 +273,9 @@ def main():
     parser.add_argument("-d", "--domain", dest="domain", required=True,
                         help="Domain name to target (specify a comma separated list for mulitple names e.g 'outlook.office365.com,mail.company.com')")
 
+    parse.add_argument("-m", "--max", dest="max_clients",
+                        help="Max number of clients that can connect. Default is unlimited but this may have adverse effects on performance")
+    
     args = parser.parse_args()
 
     # Create our config files
