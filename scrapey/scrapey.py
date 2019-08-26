@@ -1,9 +1,10 @@
 from argparse import ArgumentParser
 import sys
 import os
+import subprocess
 import csv
 import time
-from scapy.all import *
+#from scapey.all import *
 
 mac_vendors = "./mac_vendors.txt"
 
@@ -49,13 +50,20 @@ def channel_hop(args):
         144, 149, 151, 153, 155, 157, 159, 161, 165, 169, 173, 0
         ]
 
+    # The following two if statements allow setting the nominated interface to monitor mode. You'll need to figure out the full interface name
+    # for this one. macOS is usually en0 but can be en8 on older Macs with monitor mode. Keep in mind 2018 and 2019 MacBooks might have issues
+    # due to a dodgy wireless driver.
+    
     if args.band == "2.4":
         print "Scanning on 2.4 Ghz"
         for channel in bg_chans:
             print "Trying channel: " + str(channel)
             #sys.stdout.write('\rTrying channel: %d' %channel)
             #sys.stdout.flush()
-            os.system("iw dev %s set channel %d" % (args.interface, channel))
+            if "Darwin" in subprocess.check_output("uname -a", shell=True):
+                os.system("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport %s sniff %d" % (args.interface, channel)) #macOS specific
+            else:
+                os.system("iw dev %s set channel %d" % (args.interface, channel)) #Linux, Unix, Universal
             time.sleep(1)
             sniff(iface=args.interface,prn=sniffAP,timeout=int(args.timeout))
 
@@ -63,7 +71,10 @@ def channel_hop(args):
         print "Scanning on 5 Ghz"
         for channel in a_chans:
             print "Trying channel: " + str(channel)
-            os.system("iw dev %s set channel %d" % (args.interface, channel))
+            if "Darwin" in subprocess.check_output("uname -a", shell=True):
+                os.system("/System/Library/PrivateFrameworks/Apple80211.framework/Versions/Current/Resources/airport %s sniff %d" % (args.interface, channel)) #macOS specific
+            else:
+                os.system("iw dev %s set channel %d" % (args.interface, channel)) #Linux, Unix, Universal
             time.sleep(1)
             sniff(iface=args.interface,prn=sniffAP,timeout=int(args.timeout))
 
@@ -95,13 +106,14 @@ def sniffSTA(pkt):
                     print color("[+] Found connected client " + str(rc) + get_vendor_mac(rc), 2,1)
                     client_list.append(rc)
                     os.system("echo '%s~%s~%s~%s' >> deauth.txt" % (entry["channel"],entry["bssid"],rc,get_vendor_mac(rc)))
-                    os.system("echo '%s' >> scope.txt" % (get_vendor_mac(sn))
+                    os.system("echo '%s' >> scope.txt" % (get_vendor_mac(sn)))
+
             elif rc == entry["bssid"].upper():
                 if sn not in client_list:
                     print color("[+] Found connected client " + str(sn) + get_vendor_mac(sn), 2,1)
                     client_list.append(sn)
                     os.system("echo '%s~%s~%s~%s' >> deauth.txt" % (entry["channel"],entry["bssid"],sn,get_vendor_mac(sn)))
-                    os.system("echo '%s' >> scope.txt" % (get_vendor_mac(sn))
+                    os.system("echo '%s' >> scope.txt" % (get_vendor_mac(sn)))
 
 def find_clients(args):
 
